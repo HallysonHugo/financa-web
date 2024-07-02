@@ -1,6 +1,6 @@
 import currencyBrFormatter from "@/lib/formatters/currency_formatter";
 
-interface ExpenseItemProps {
+export interface ExpenseItemProps {
     color: string;
     title: string;
     amount: number;

@@ -1,13 +1,15 @@
 "use client";
-import ExpenseItem from "@/components/items/expense_items";
+import ExpenseItem, { ExpenseItemProps } from "@/components/items/expense_items";
 import currencyBrFormatter from "@/lib/formatters/currency_formatter";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
+import React, { useState } from "react";
+import Modal from "@/components/modals/modal";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 
-const expenseItemsData = [
+const expenseItemsData: ExpenseItemProps[] = [
   {
     color: "red",
     title: "Comida",
@@ -26,19 +28,34 @@ const expenseItemsData = [
 ]
 
 export default function Home() {
-  return (
+  //change the modal children and open the modal
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalChildren, setModalChildren] = useState<React.JSX.Element | undefined>(undefined);
+
+  return (<>
+    {/* Modal */}
+    <Modal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} setModalChildren={setModalChildren}>
+      {modalChildren}
+    </Modal>
+    {/* Main */}
     <main className="container mx-auto">
       {/* Balance */}
       <section className="py-3">
-        <small className="text-gray-400 text-md">My balance</small>
+        <small className="text-gray-400 text-md">Saldo</small>
         <h2 className="text-4xl font-bold">{currencyBrFormatter(10000)}</h2>
       </section>
       {/* Buttons */}
       <section className="flex items-center gap-2 py-3">
-        <button className="btn btn-primary">
+        <button onClick={() => {
+          setModalIsOpen(true);
+          setModalChildren(<h1>Modal aberto ganhos</h1>);
+        }} className="btn btn-primary">
           + Ganhos
         </button>
-        <button className="btn btn-primary-outline">
+        <button onClick={() => {
+          setModalIsOpen(true);
+          setModalChildren(<h1>Modal aberto gastos</h1>);
+        }} className="btn btn-primary-outline">
           - Gastos
         </button>
       </section>
@@ -61,19 +78,20 @@ export default function Home() {
       {/* chats */}
       <section className="py-6">
         <h3 className="text-2xl">Stats</h3>
-        <div>
-          <Doughnut width="10px" height="10px" data={{
+        <div className="w-1/2 mx-auto">
+          <Doughnut data={{
             labels: expenseItemsData.map(item => item.title),
             datasets: [{
               label: "Gastos",
-              data: expenseItemsData.map(item => Math.abs(item.amount)),
+              data: expenseItemsData.map(item => item.amount),
               backgroundColor: expenseItemsData.map(item => item.color),
-              borderColor: "#f9f9f9",
+              borderColor: ["#f9f9f9"],
               borderWidth: 1
             }]
           }} />
         </div>
       </section>
     </main>
+  </>
   )
 }
