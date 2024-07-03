@@ -3,11 +3,13 @@ import ExpenseItem from "@/components/items/expense_items";
 import currencyBrFormatter from "@/lib/formatters/currency_formatter";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Modal from "@/components/modals/modal";
 import ExpenseModel from "./expense/models/expense.model";
+import expenseController from "./expense/controller/expense.controller";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
+
 
 
 const expenseItemsData: ExpenseModel[] = [
@@ -38,10 +40,11 @@ export default function Home() {
   //change the modal children and open the modal
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalChildren, setModalChildren] = useState<React.JSX.Element | undefined>(undefined);
-
+  const [expenses, setExpenses] = useState<ExpenseModel[]>([]);
   const addRefreshPrevent = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
+
 
   return (<>
     {/* Modal */}
@@ -81,7 +84,9 @@ export default function Home() {
                   required
                   placeholder="Infome o valor" />
               </div>
-              <button type="submit" className="btn btn-primary">Adicionar Ganho</button>
+              <button onClick={() => {
+
+              }} type="submit" className="btn btn-primary">Adicionar Ganho</button>
             </form>
           </>);
         }} className="btn btn-primary">
@@ -112,6 +117,15 @@ export default function Home() {
                     name="amount"
                     required
                     placeholder="Infome o valor" />
+                </div>
+                {/* Add date picker */}
+                <div className="input-group">
+                  <label htmlFor="date">Data</label>
+                  <input
+                    type="date"
+                    name="date"
+                    required
+                    placeholder="Infome a data" />
                 </div>
 
                 <button type="submit" className="btn btn-danger">Adicionar Gasto</button>
