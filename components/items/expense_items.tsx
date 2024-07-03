@@ -1,12 +1,8 @@
+import ExpenseModel from "@/app/expense/models/expense.model";
 import currencyBrFormatter from "@/lib/formatters/currency_formatter";
 
-export interface ExpenseItemProps {
-    color: string;
-    title: string;
-    amount: number;
-}
 
-function ExpenseItem({ color, title, amount }: ExpenseItemProps) {
+function ExpenseItem({ color, title, amount }: ExpenseModel) {
     return (
         <button>
             <div className="flex items-center justify-between px-4 py-4 bg-slate-700 rounded-3xl">

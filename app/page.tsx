@@ -1,29 +1,36 @@
 "use client";
-import ExpenseItem, { ExpenseItemProps } from "@/components/items/expense_items";
+import ExpenseItem from "@/components/items/expense_items";
 import currencyBrFormatter from "@/lib/formatters/currency_formatter";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import React, { useState } from "react";
 import Modal from "@/components/modals/modal";
+import ExpenseModel from "./expense/models/expense.model";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 
-const expenseItemsData: ExpenseItemProps[] = [
+const expenseItemsData: ExpenseModel[] = [
   {
     color: "red",
     title: "Comida",
-    amount: -100
+    amount: -100,
+    date: new Date(),
+    done: false
   },
   {
     color: "blue",
     title: "Transporte",
-    amount: -50
+    amount: -50,
+    date: new Date(),
+    done: false
   },
   {
     color: "green",
     title: "Salário",
-    amount: 500
+    amount: 500,
+    date: new Date(),
+    done: false
   }
 ]
 
@@ -31,6 +38,10 @@ export default function Home() {
   //change the modal children and open the modal
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalChildren, setModalChildren] = useState<React.JSX.Element | undefined>(undefined);
+
+  const addRefreshPrevent = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };
 
   return (<>
     {/* Modal */}
@@ -48,13 +59,66 @@ export default function Home() {
       <section className="flex items-center gap-2 py-3">
         <button onClick={() => {
           setModalIsOpen(true);
-          setModalChildren(<h1>Modal aberto ganhos</h1>);
+          setModalChildren(<>
+            <form className="flex flex-col gap-4">
+              <div className="input-group">
+                <label htmlFor="description">Descrição</label>
+                <input
+                  type="text"
+                  min={0.01}
+                  step={0.01}
+                  name="description"
+                  required
+                  placeholder="Infome a descricão" />
+              </div>
+              <div className="input-group">
+                <label htmlFor="amount">Ganhos</label>
+                <input
+                  type="number"
+                  min={0.01}
+                  step={0.01}
+                  name="amount"
+                  required
+                  placeholder="Infome o valor" />
+              </div>
+              <button type="submit" className="btn btn-primary">Adicionar Ganho</button>
+            </form>
+          </>);
         }} className="btn btn-primary">
           + Ganhos
         </button>
         <button onClick={() => {
           setModalIsOpen(true);
-          setModalChildren(<h1>Modal aberto gastos</h1>);
+          setModalChildren(
+            <>
+              <form className="flex flex-col gap-4">
+                <div className="input-group">
+                  <label htmlFor="description">Descrição</label>
+                  <input
+                    type="text"
+                    min={0.01}
+                    step={0.01}
+                    name="description"
+                    required
+                    placeholder="Infome a descricão" />
+                </div>
+
+                <div className="input-group">
+                  <label htmlFor="amount">Gastos</label>
+                  <input
+                    type="number"
+                    min={0.01}
+                    step={0.01}
+                    name="amount"
+                    required
+                    placeholder="Infome o valor" />
+                </div>
+
+                <button type="submit" className="btn btn-danger">Adicionar Gasto</button>
+
+              </form>
+            </>
+          );
         }} className="btn btn-primary-outline">
           - Gastos
         </button>
