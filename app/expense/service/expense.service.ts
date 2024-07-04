@@ -5,6 +5,11 @@ async function getAllExpenses() {
     return repository.getAllExpenses();
 }
 
+async function getTotalExpenses() {
+    const expenses = await repository.getTotalExpenses();
+    return expenses.data as number;
+}
+
 
 async function returnIncomes() {
     const expenses = await getAllExpenses();
@@ -26,7 +31,8 @@ const service = {
     getAllExpenses,
     returnIncomes,
     returnExpenses,
-    createExpense
+    createExpense,
+    getTotalExpenses
 };
 
 export default service;

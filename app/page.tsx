@@ -3,7 +3,7 @@ import ExpenseItem from "@/components/items/expense_items";
 import currencyBrFormatter from "@/lib/formatters/currency_formatter";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Modal from "@/components/modals/modal";
 import ExpenseModel from "./expense/models/expense.model";
 import expenseController from "./expense/controller/expense.controller";
@@ -12,38 +12,34 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 
 
-const expenseItemsData: ExpenseModel[] = [
-  {
-    color: "red",
-    title: "Comida",
-    amount: -100,
-    date: new Date(),
-    done: false
-  },
-  {
-    color: "blue",
-    title: "Transporte",
-    amount: -50,
-    date: new Date(),
-    done: false
-  },
-  {
-    color: "green",
-    title: "Salário",
-    amount: 500,
-    date: new Date(),
-    done: false
-  }
-]
-
 export default function Home() {
   //change the modal children and open the modal
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalChildren, setModalChildren] = useState<React.JSX.Element | undefined>(undefined);
   const [expenses, setExpenses] = useState<ExpenseModel[]>([]);
+  const [saldo, setSaldo] = useState<number>(0);
+
+
+  function requiredData() {
+    expenseController.getAllExpenses().then((data) => {
+      setExpenses(data);
+    });
+    expenseController.getTotalExpenses().then((data) => {
+      setSaldo(data);
+    });
+  }
+
+  useEffect(() => {
+    requiredData();
+  }, []);
+
   const addRefreshPrevent = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
+
+  const descriptionRef = useRef<HTMLInputElement>(null);
+  const amountRef = useRef<HTMLInputElement>(null);
+  const dateRef = useRef<HTMLInputElement>(null);
 
 
   return (<>
@@ -56,7 +52,7 @@ export default function Home() {
       {/* Balance */}
       <section className="py-3">
         <small className="text-gray-400 text-md">Saldo</small>
-        <h2 className="text-4xl font-bold">{currencyBrFormatter(10000)}</h2>
+        <h2 className="text-4xl font-bold">{currencyBrFormatter(saldo)}</h2>
       </section>
       {/* Buttons */}
       <section className="flex items-center gap-2 py-3">
@@ -72,6 +68,7 @@ export default function Home() {
                   step={0.01}
                   name="description"
                   required
+                  ref={descriptionRef}
                   placeholder="Infome a descricão" />
               </div>
               <div className="input-group">
@@ -82,10 +79,21 @@ export default function Home() {
                   step={0.01}
                   name="amount"
                   required
+                  ref={amountRef}
                   placeholder="Infome o valor" />
               </div>
-              <button onClick={() => {
-
+              <button onClick={(e) => {
+                e.preventDefault();
+                const description = descriptionRef.current?.value;
+                const amount = amountRef.current?.value;
+                // const date = dateRef.current?.value;
+                if (!description || !amount) {
+                  return;
+                }
+                expenseController.addExpense(description, amount, new Date(), true).then(() => {
+                  requiredData();
+                  setModalIsOpen(false);
+                });
               }} type="submit" className="btn btn-primary">Adicionar Ganho</button>
             </form>
           </>);
@@ -105,6 +113,7 @@ export default function Home() {
                     step={0.01}
                     name="description"
                     required
+                    ref={descriptionRef}
                     placeholder="Infome a descricão" />
                 </div>
 
@@ -116,6 +125,7 @@ export default function Home() {
                     step={0.01}
                     name="amount"
                     required
+                    ref={amountRef}
                     placeholder="Infome o valor" />
                 </div>
                 {/* Add date picker */}
@@ -125,11 +135,22 @@ export default function Home() {
                     type="date"
                     name="date"
                     required
+                    ref={dateRef}
                     placeholder="Infome a data" />
                 </div>
-
-                <button type="submit" className="btn btn-danger">Adicionar Gasto</button>
-
+                <button type="submit" onClick={(e) => {
+                  e.preventDefault();
+                  const description = descriptionRef.current?.value;
+                  const amount = amountRef.current?.value;
+                  const date = dateRef.current?.value;
+                  if (!description || !amount || !date) {
+                    return;
+                  }
+                  expenseController.addExpense(description, amount, new Date(date), false).then(() => {
+                    requiredData();
+                    setModalIsOpen(false);
+                  });
+                }} className="btn btn-danger">Adicionar Gasto</button>
               </form>
             </>
           );
@@ -142,7 +163,7 @@ export default function Home() {
         <h3 className="text-2xl">Meus gastos</h3>
         <div className="flex flex-col gap-4 mt-6">
           {/* Expense items. Three ways to render a list of items using map*/}
-          {expenseItemsData.map((item, index) => {
+          {expenses?.map((item, index) => {
             return <ExpenseItem key={index} {...item} />
           })}
           {/* {expenseItemsData.map((expense) => (
@@ -155,14 +176,14 @@ export default function Home() {
       </section>
       {/* chats */}
       <section className="py-6">
-        <h3 className="text-2xl">Stats</h3>
+        <h3 className="text-2xl">Gastos por categoria</h3>
         <div className="w-1/2 mx-auto">
           <Doughnut data={{
-            labels: expenseItemsData.map(item => item.title),
+            labels: expenses.map(item => item.category.name),
             datasets: [{
-              label: "Gastos",
-              data: expenseItemsData.map(item => item.amount),
-              backgroundColor: expenseItemsData.map(item => item.color),
+              label: "Gastos por categoria",
+              data: expenses.map(item => item.category.totalExpenses),
+              backgroundColor: expenses.map(item => item.category.color),
               borderColor: ["#f9f9f9"],
               borderWidth: 1
             }]
