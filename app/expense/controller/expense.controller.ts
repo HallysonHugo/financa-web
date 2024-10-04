@@ -30,7 +30,12 @@ async function addExpense(description: string, amount: string, date: Date, isInc
         },
         done: false
     };
-    expenseController.createExpense(expense);
+    await expenseController.createExpense(expense);
+}
+
+
+async function getCategoryWithTotalExpenseValue() {
+    return await service.getCategoryWithTotalExpenseValue();
 }
 
 async function getTotalExpenses() {
@@ -39,14 +44,15 @@ async function getTotalExpenses() {
 
 
 async function createExpense(income: ExpenseModel) {
-    return service.createExpense(income);
+    return await service.createExpense(income);
 }
 
 const expenseController = {
     getAllExpenses,
     createExpense,
     getTotalExpenses,
-    addExpense
+    addExpense,
+    getCategoryWithTotalExpenseValue
 }
 
 export default expenseController;

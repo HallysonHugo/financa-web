@@ -8,6 +8,11 @@ async function getAllExpenses() {
     return expenses.data as ExpenseModel[];
 }
 
+async function getCategoryWithTotalExpenseValue() {
+    const expenses = await axiosInstance.get(expenseModel + "category");
+    return expenses;
+}
+
 async function getTotalExpenses() {
     const expenses = await axiosInstance.get(expenseModel + "total");
     return expenses;
@@ -39,7 +44,8 @@ const repository = {
     createExpense,
     updateExpense,
     deleteExpense,
-    getTotalExpenses
+    getTotalExpenses,
+    getCategoryWithTotalExpenseValue
 
 }
 
