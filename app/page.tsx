@@ -5,10 +5,10 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import React, { useState, useRef, useEffect } from "react";
 import Modal from "@/components/modals/modal";
-import ExpenseModel from "./expense/models/expense.model";
+import Expense from "./expense/models/expense.model";
 import expenseController from "./expense/controller/expense.controller";
 import ExpenseForm from "@/components/forms/expense.form";
-import CategoryModel from "./expense/models/category.model";
+import { Category } from "./expense/models/category.model";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -18,9 +18,9 @@ export default function Home() {
   //change the modal children and open the modal
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalChildren, setModalChildren] = useState<React.JSX.Element | undefined>(undefined);
-  const [expenses, setExpenses] = useState<ExpenseModel[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [saldo, setSaldo] = useState<number>(0);
-  const [categories, setCategories] = useState<CategoryModel[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
 
   async function requiredData(): Promise<void> {

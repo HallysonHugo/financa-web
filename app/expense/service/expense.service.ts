@@ -1,14 +1,14 @@
-import CategoryModel from "../models/category.model";
-import ExpenseModel from "../models/expense.model";
+import { Category } from "../models/category.model";
+import Expense from "../models/expense.model";
 import repository from "../repository/expense.repository";
 
-async function getAllExpenses() {
+async function getAllExpenses(): Promise<Expense[]> {
     return repository.getAllExpenses();
 }
 
 async function getCategoryWithTotalExpenseValue() {
     const category = await repository.getCategoryWithTotalExpenseValue();
-    const categoryModel: CategoryModel[] = category.data.map((data: any) => {
+    const categoryModel: Category[] = category.data.map((data: any) => {
         return {
             _id: data.category._id,
             name: data.category.name,
@@ -37,7 +37,7 @@ async function returnExpenses() {
 }
 
 
-async function createExpense(income: ExpenseModel) {
+async function createExpense(income: Expense) {
     return await repository.createExpense(income);
 }
 

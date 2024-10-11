@@ -1,42 +1,54 @@
-import ExpenseModel from "../models/expense.model";
-import axiosInstance from "@/app/service/axios.connection";
+import Expense from "../models/expense.model";
 
-const expenseModel = "/expense/"
 
-async function getAllExpenses() {
-    const expenses = await axiosInstance.get(expenseModel);
-    return expenses.data as ExpenseModel[];
+
+async function getAllExpenses(): Promise<Expense[]> {
+    const response = await fetch('/api/expense')
+    return response.json();
 }
 
 async function getCategoryWithTotalExpenseValue() {
-    const expenses = await axiosInstance.get(expenseModel + "category");
-    return expenses;
+    const response = await fetch('/api/expense')
+    return response.json();
 }
 
 async function getTotalExpenses() {
-    const expenses = await axiosInstance.get(expenseModel + "total");
-    return expenses;
+    const response = await fetch('/api/expense/total')
+    return response.json();
 }
 
-async function createExpense(expense: ExpenseModel) {
+async function createExpense(expense: Expense) {
     console.log(expense);
-    await axiosInstance.post(expenseModel, {
-        title: expense.title,
-        description: expense.description,
-        category: expense.category._id,
-        installments: expense.installments,
-        tax: expense.tax,
-        amount: expense.amount,
-        date: expense.date,
-        done: expense.done
+    const response = await fetch('/api/expense', {
+        body: JSON.stringify(expense),
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
     });
+    return response.json();
 }
 
-async function updateExpense(expense: ExpenseModel) {
+async function updateExpense(expense: Expense) {
+    const response = await fetch('/api/expense', {
+        body: JSON.stringify(expense),
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    });
+    return response.json();
 }
 
-async function deleteExpense(expense: ExpenseModel) {
-
+async function deleteExpense(expense: Expense) {
+    const response = await fetch('/api/expense', {
+        body: JSON.stringify(expense),
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    });
+    return response.json();
 }
 
 const repository = {

@@ -1,5 +1,6 @@
 
-import ExpenseModel from "../models/expense.model";
+import { Types } from "mongoose";
+import Expense from "../models/expense.model";
 import service from "../service/expense.service";
 
 async function getAllExpenses() {
@@ -17,13 +18,13 @@ async function addExpense(description: string, amount: string, date: Date, isInc
     } else {
         convertedAmout = parseFloat(amount) * -1;
     }
-    const expense = {
+    const expense: Expense = {
         title: description,
         description: description,
         amount: convertedAmout,
         date: new Date(date),
         category: {
-            _id: "6686bb3a7e758d21a17d2316",
+            _id: new Types.ObjectId("6686bb3a7e758d21a17d2316"),
             name: "Outros",
             color: "#000000",
             totalExpenses: 0
@@ -43,7 +44,7 @@ async function getTotalExpenses() {
 }
 
 
-async function createExpense(income: ExpenseModel) {
+async function createExpense(income: Expense) {
     return await service.createExpense(income);
 }
 

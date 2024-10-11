@@ -1,4 +1,4 @@
-import ExpenseModel from "@/app/expense/models/expense.model";
+import Expense from "@/app/expense/models/expense.model";
 import currencyBrFormatter from "@/lib/formatters/currency_formatter";
 interface ExpenseItemProps {
     color: string;
