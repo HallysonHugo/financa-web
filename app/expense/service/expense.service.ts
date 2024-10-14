@@ -44,6 +44,16 @@ async function createExpense(income: ExpenseModel) {
   return await repository.createExpense(income);
 }
 
+async function deleteExpense(expense: ExpenseModel) {
+  if (expense._id) {
+    return await repository.deleteExpense(expense._id.toString());
+  }
+}
+
+async function getCategories() {
+  return await repository.getCategories();
+}
+
 const service = {
   getAllExpenses,
   returnIncomes,
@@ -51,6 +61,8 @@ const service = {
   createExpense,
   getTotalExpenses,
   getCategoryWithTotalExpenseValue,
+  deleteExpense,
+  getCategories,
 };
 
 export default service;

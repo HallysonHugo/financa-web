@@ -135,7 +135,15 @@ export default function Home() {
             {expenses.map((item, index) => {
               return (
                 <ExpenseItem
-                  key={index}
+                  key={item._id?.toString() ?? index}
+                  onClick={() => {
+                    //TODO update expense
+                  }}
+                  onDelete={() => {
+                    expenseController.deleteExpense(item).then(() => {
+                      requiredData();
+                    });
+                  }}
                   title={item.title}
                   amount={item.amount}
                   color={item.category?.color ?? "#000"}

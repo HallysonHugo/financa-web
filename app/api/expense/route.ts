@@ -1,6 +1,7 @@
 import { connectMongo } from "@/app/service/db.connection";
 import ExpenseSchemaModel, { ExpenseMongo } from "./schema/expense.schema";
 import ExpenseModel from "@/app/expense/models/expense.model";
+import { Types } from "mongoose";
 
 export async function GET(request: Request) {
   await connectMongo();

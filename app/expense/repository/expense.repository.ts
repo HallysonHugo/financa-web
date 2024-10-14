@@ -38,14 +38,19 @@ async function updateExpense(expense: ExpenseModel) {
   return response.json();
 }
 
-async function deleteExpense(expense: ExpenseModel) {
+async function deleteExpense(expenseId: string) {
   const response = await fetch("/api/expense", {
-    body: JSON.stringify(expense),
+    body: JSON.stringify({ _id: expenseId }),
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
     },
   });
+  return response.json();
+}
+
+async function getCategories() {
+  const response = await fetch("/api/category");
   return response.json();
 }
 
@@ -56,6 +61,7 @@ const repository = {
   deleteExpense,
   getTotalExpenses,
   getCategoryWithTotalExpenseValue,
+  getCategories,
 };
 
 export default repository;

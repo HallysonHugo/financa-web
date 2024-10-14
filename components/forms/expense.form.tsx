@@ -1,55 +1,95 @@
+import expenseController from "@/app/expense/controller/expense.controller";
+import { CategoryModel } from "@/app/expense/models/category.model";
+import { useEffect, useState } from "react";
+
 interface ExpenseFormProps {
-    descriptionRef: React.RefObject<HTMLInputElement>,
-    amountRef: React.RefObject<HTMLInputElement>,
-    dateRef: React.RefObject<HTMLInputElement>,
-    onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
-    isIncome: boolean
+  descriptionRef: React.RefObject<HTMLInputElement>;
+  amountRef: React.RefObject<HTMLInputElement>;
+  dateRef: React.RefObject<HTMLInputElement>;
+  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  isIncome: boolean;
 }
 
-export default function ExpenseForm({ descriptionRef, amountRef, dateRef, onClick, isIncome }: ExpenseFormProps) {
-    return (
-        <>
-            <form className="flex flex-col gap-4">
-                <div className="input-group">
-                    <label htmlFor="description">Descrição</label>
-                    <input
-                        type="text"
-                        min={0.01}
-                        step={0.01}
-                        name="description"
-                        required
-                        ref={descriptionRef}
-                        placeholder="Infome a descricão" />
-                </div>
-
-                <div className="input-group">
-                    <label htmlFor="amount">Gastos</label>
-                    <input
-                        type="number"
-                        min={0.01}
-                        step={0.01}
-                        name="amount"
-                        required
-                        ref={amountRef}
-                        placeholder="Infome o valor" />
-                </div>
-                {/* Add date picker */}
-                <div className="input-group">
-                    <label htmlFor="date">Data</label>
-                    <input
-                        type="date"
-                        name="date"
-                        required
-                        ref={dateRef}
-                        placeholder="Infome a data" />
-                </div>
-                {
-                    isIncome ? <button type="submit" onClick={onClick} className="btn btn-primary">Adicionar Ganho</button> :
-                        <button type="submit" onClick={onClick} className="btn btn-danger">Adicionar Gasto</button>
-                }
-
-            </form>
-        </>
-    )
-
+export default function ExpenseForm({
+  descriptionRef,
+  amountRef,
+  dateRef,
+  onClick,
+  isIncome,
+}: ExpenseFormProps) {
+  const [categories, setCategories] = useState<CategoryModel[]>([]);
+  useEffect(() => {
+    expenseController.getCategories().then((data) => {
+      setCategories(data);
+    });
+  }, []);
+  return (
+    <>
+      <form className="flex flex-col gap-4">
+        <div className="input-group">
+          <label htmlFor="description">Descrição</label>
+          <input
+            type="text"
+            min={0.01}
+            step={0.01}
+            name="description"
+            required
+            ref={descriptionRef}
+            placeholder="Infome a descricão"
+          />
+        </div>
+        {/* Create a dropdown with categories */}
+        <div className="input-group">
+          <label htmlFor="category">Categoria</label>
+          <select
+            className="px-4 py-2 bg-slate-600 rounded-xl"
+            name="category"
+            required
+          >
+            {categories.map((category) => (
+              <option
+                className="capitalize text-gray-800"
+                key={category._id?.toString()}
+                value={category._id?.toString()}
+              >
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="input-group">
+          <label htmlFor="amount">Gastos</label>
+          <input
+            type="number"
+            min={0.01}
+            step={0.01}
+            name="amount"
+            required
+            ref={amountRef}
+            placeholder="Infome o valor"
+          />
+        </div>
+        {/* Add date picker */}
+        <div className="input-group">
+          <label htmlFor="date">Data</label>
+          <input
+            type="date"
+            name="date"
+            required
+            ref={dateRef}
+            placeholder="Infome a data"
+          />
+        </div>
+        {isIncome ? (
+          <button type="submit" onClick={onClick} className="btn btn-primary">
+            Adicionar Ganho
+          </button>
+        ) : (
+          <button type="submit" onClick={onClick} className="btn btn-danger">
+            Adicionar Gasto
+          </button>
+        )}
+      </form>
+    </>
+  );
 }

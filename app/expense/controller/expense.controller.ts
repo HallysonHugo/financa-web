@@ -41,12 +41,19 @@ async function getCategoryWithTotalExpenseValue() {
   return await service.getCategoryWithTotalExpenseValue();
 }
 
+async function getCategories() {
+  return await service.getCategories();
+}
+
 async function getTotalExpenses() {
   return service.getTotalExpenses();
 }
 
 async function createExpense(income: ExpenseModel) {
   return await service.createExpense(income);
+}
+async function deleteExpense(expense: ExpenseModel) {
+  return await service.deleteExpense(expense);
 }
 
 const expenseController = {
@@ -55,6 +62,8 @@ const expenseController = {
   getTotalExpenses,
   addExpense,
   getCategoryWithTotalExpenseValue,
+  deleteExpense,
+  getCategories,
 };
 
 export default expenseController;
