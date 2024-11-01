@@ -52,9 +52,6 @@ async function getCategories() {
   return await service.getCategories();
 }
 
-async function getTotalExpenses() {
-  return service.getTotalExpenses();
-}
 
 async function createExpense(income: ExpenseModel) {
   return await service.createExpense(income);
@@ -66,7 +63,7 @@ async function deleteExpense(expense: ExpenseModel) {
 const expenseController = {
   getAllExpenses,
   createExpense,
-  getTotalExpenses,
+
   addExpense,
   getCategoryWithTotalExpenseValue,
   deleteExpense,
