@@ -8,6 +8,7 @@ async function connectMongo() {
     if (!mongoUrl) {
         throw new Error("MongoDB URL not found");
     }
+    // Test
     connection = await connect(mongoUrl, {
         serverSelectionTimeoutMS: 10000, // 10 seconds timeout
         socketTimeoutMS: 45000, // 45 seconds socket timeout
