@@ -6,6 +6,7 @@ interface ExpenseFormProps {
   descriptionRef: React.RefObject<HTMLInputElement>;
   amountRef: React.RefObject<HTMLInputElement>;
   dateRef: React.RefObject<HTMLInputElement>;
+  installmentsRef: React.RefObject<HTMLInputElement>;
   onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   isIncome: boolean;
 }
@@ -16,6 +17,7 @@ export default function ExpenseForm({
   dateRef,
   onClick,
   isIncome,
+  installmentsRef,
 }: ExpenseFormProps) {
   const [categories, setCategories] = useState<CategoryModel[]>([]);
   useEffect(() => {
@@ -85,6 +87,7 @@ export default function ExpenseForm({
                 name="installments"
                 required
                 placeholder="Infome o número de parcelas"
+                ref={installmentsRef}
               />
             </div>
           )

@@ -26,8 +26,8 @@ export default function Home() {
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth());
 
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro", "Todos"
   ];
 
   async function requiredData(): Promise<void> {
@@ -51,6 +51,8 @@ export default function Home() {
   const descriptionRef = useRef<HTMLInputElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
   const dateRef = useRef<HTMLInputElement>(null);
+  const installmentsRef = useRef<HTMLInputElement>(null);
+  const isFullValueRef = useRef<HTMLInputElement>(null);
 
   return (
     <>
@@ -85,7 +87,7 @@ export default function Home() {
 
         {/* Balance */}
         <section className="py-3">
-          <small className="text-gray-400 text-md">Valor Mensal</small>
+          <small className="text-gray-400 text-md">Saldo</small>
           <h2 className="text-4xl font-bold">{currencyBrFormatter(saldo)}</h2>
         </section>
 
@@ -96,6 +98,7 @@ export default function Home() {
               setModalIsOpen(true);
               setModalChildren(
                 <ExpenseForm
+                  installmentsRef={installmentsRef}
                   isIncome={true}
                   descriptionRef={descriptionRef}
                   amountRef={amountRef}
@@ -109,7 +112,7 @@ export default function Home() {
                       return;
                     }
                     expenseController
-                      .addExpense(description, amount, new Date(date), true)
+                      .addExpense(description, amount, new Date(date), true, isFullValueRef.current?.checked ?? false, parseInt(installmentsRef.current?.value ?? "1"))
                       .then(() => {
                         requiredData().then(() => {
                           setModalIsOpen(false);
@@ -128,6 +131,7 @@ export default function Home() {
               setModalIsOpen(true);
               setModalChildren(
                 <ExpenseForm
+                  installmentsRef={installmentsRef}
                   isIncome={false}
                   descriptionRef={descriptionRef}
                   amountRef={amountRef}
@@ -141,7 +145,7 @@ export default function Home() {
                       return;
                     }
                     expenseController
-                      .addExpense(description, amount, new Date(date), false)
+                      .addExpense(description, amount, new Date(date), false, isFullValueRef.current?.checked ?? false, parseInt(installmentsRef.current?.value ?? "1"))
                       .then(() => {
                         requiredData().then(() => {
                           setModalIsOpen(false);

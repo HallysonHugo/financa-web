@@ -31,7 +31,7 @@ function ExpenseItem({
           <p>
             {amount < 0 ? (
               <span className="text-red-500">
-                {currencyBrFormatter(amount)}
+                {currencyBrFormatter((amount *= -1))}
               </span>
             ) : (
               <span className="text-green-500">

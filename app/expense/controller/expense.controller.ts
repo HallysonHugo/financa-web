@@ -14,7 +14,9 @@ async function addExpense(
   description: string,
   amount: string,
   date: Date,
-  isIncome: boolean
+  isIncome: boolean,
+  isFullValue: boolean,
+  installments: number
 ) {
   if (!description || !amount || !date) {
     return;
@@ -30,6 +32,7 @@ async function addExpense(
     description: description,
     amount: convertedAmout,
     date: new Date(date),
+    installments: installments,
     category: {
       _id: new Types.ObjectId("6686bb3a7e758d21a17d2316"),
       name: "Outros",

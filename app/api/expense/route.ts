@@ -12,12 +12,11 @@ export async function GET(request: Request) {
 
   // For example, get the 'month' query parameter
   const month = searchParams.get('month');
-  console.log(month);
   const matchQuery = month ? {
     date: {
       // check if the month is the same as the one in the query parameter
-      $gte: new Date(new Date().getFullYear(), (parseInt(month) - 1), 1),
-      $lt: new Date(new Date().getFullYear(), (parseInt(month) - 1) + 1, 1),
+      $gte: new Date(new Date().getFullYear(), parseInt(month!), 1),
+      $lt: new Date(new Date().getFullYear(), parseInt(month!) + 1, 0),
     }
   } : {};
   // You can now use 'month' in your MongoDB query if needed
@@ -37,7 +36,6 @@ export async function GET(request: Request) {
       $match: matchQuery,
     },
   ]);
-  console.log(result);
 
   const expenses = result?.map((expense) => {
     return {
@@ -63,9 +61,7 @@ export async function POST(request: Request) {
   const result = [];
   for (let i = 0; i < (body.installments ?? 1); i++) {
     const date = new Date(body.date)
-    console.log(date);
     date.setMonth(date.getMonth() + i);
-
     const expenseSchemaModel: ExpenseSchemaModel = {
       title: body.title,
       description: body.description,

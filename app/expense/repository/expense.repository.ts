@@ -16,7 +16,6 @@ async function getTotalExpenses() {
 }
 
 async function createExpense(expense: ExpenseModel) {
-  console.log(expense);
   const response = await fetch("/api/expense", {
     body: JSON.stringify(expense),
     method: "POST",
