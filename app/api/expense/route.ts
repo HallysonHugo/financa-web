@@ -2,9 +2,25 @@ import { connectMongo } from "@/app/service/db.connection";
 import ExpenseSchemaModel, { ExpenseMongo } from "./schema/expense.schema";
 import ExpenseModel from "@/app/expense/models/expense.model";
 import { Types } from "mongoose";
+import { match } from "assert";
 
 export async function GET(request: Request) {
   await connectMongo();
+
+  // Parse the URL to extract query parameters
+  const { searchParams } = new URL(request.url);
+
+  // For example, get the 'month' query parameter
+  const month = searchParams.get('month');
+  console.log(month);
+  const matchQuery = month ? {
+    date: {
+      // check if the month is the same as the one in the query parameter
+      $gte: new Date(new Date().getFullYear(), (parseInt(month) - 1), 1),
+      $lt: new Date(new Date().getFullYear(), (parseInt(month) - 1) + 1, 1),
+    }
+  } : {};
+  // You can now use 'month' in your MongoDB query if needed
   const result = await ExpenseMongo.aggregate([
     {
       $lookup: {
@@ -14,14 +30,24 @@ export async function GET(request: Request) {
         as: "category",
       },
     },
+    {
+      $unwind: "$category",
+    },
+    {
+      $match: matchQuery,
+    },
   ]);
+  console.log(result);
+
   const expenses = result?.map((expense) => {
     return {
       ...expense,
       category: expense.category[0],
     };
   });
+
   const total = expenses?.reduce((acc, expense) => acc + expense.amount, 0);
+
   return new Response(
     JSON.stringify({
       total: total,
@@ -34,18 +60,25 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   await connectMongo();
   const body: ExpenseModel = await request.json();
-  const expenseSchemaModel: ExpenseSchemaModel = {
-    title: body.title,
-    description: body.description,
-    categoryId: body.category?._id,
-    installments: body.installments,
-    tax: body.tax,
-    amount: body.amount,
-    date: body.date,
-    done: body.done,
-  };
-  const expense = await ExpenseMongo.create(expenseSchemaModel);
-  return new Response(JSON.stringify(expense), { status: 201 });
+  const result = [];
+  for (let i = 0; i < (body.installments ?? 1); i++) {
+    const date = new Date(body.date)
+    console.log(date);
+    date.setMonth(date.getMonth() + i);
+
+    const expenseSchemaModel: ExpenseSchemaModel = {
+      title: body.title,
+      description: body.description,
+      categoryId: body.category?._id,
+      installments: body.installments,
+      tax: body.tax,
+      amount: body.amount,
+      date: date,
+      done: false,
+    };
+    result.push(await ExpenseMongo.create(expenseSchemaModel));
+  }
+  return new Response(JSON.stringify(result), { status: 201 });
 }
 
 export async function PUT(request: Request) {

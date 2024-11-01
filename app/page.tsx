@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import ExpenseItem from "@/components/items/expense_items";
 import currencyBrFormatter from "@/lib/formatters/currency_formatter";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
@@ -14,7 +14,6 @@ import { set } from "mongoose";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function Home() {
-  //change the modal children and open the modal
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalChildren, setModalChildren] = useState<
     React.JSX.Element | undefined
@@ -23,9 +22,18 @@ export default function Home() {
   const [saldo, setSaldo] = useState<number>(0);
   const [categories, setCategories] = useState<CategoryModel[]>([]);
 
+  // Track selected month (0-11 corresponds to Jan-Dec)
+  const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth());
+
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
   async function requiredData(): Promise<void> {
+
     await Promise.all([
-      expenseController.getAllExpenses().then((data) => {
+      expenseController.getExpensesByMonth(selectedMonth).then((data) => {
         setExpenses(data.expenses);
         setSaldo(data.total);
       }),
@@ -36,8 +44,9 @@ export default function Home() {
   }
 
   useEffect(() => {
+
     requiredData();
-  }, []);
+  }, [selectedMonth]);
 
   const descriptionRef = useRef<HTMLInputElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
@@ -55,11 +64,31 @@ export default function Home() {
       </Modal>
       {/* Main */}
       <main className="container mx-auto">
+        {/* Horizontal list of months */}
+        <section className="py-3">
+          <h3 className="text-2xl">Filter by Month</h3>
+          <div className="flex overflow-x-auto py-2 gap-4">
+            {months.map((month, index) => (
+              <button
+                key={month}
+                className={`px-4 py-2 rounded ${selectedMonth === index
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-800"
+                  }`}
+                onClick={() => setSelectedMonth(index)}
+              >
+                {month}
+              </button>
+            ))}
+          </div>
+        </section>
+
         {/* Balance */}
         <section className="py-3">
-          <small className="text-gray-400 text-md">Wallet</small>
+          <small className="text-gray-400 text-md">Valor Mensal</small>
           <h2 className="text-4xl font-bold">{currencyBrFormatter(saldo)}</h2>
         </section>
+
         {/* Buttons */}
         <section className="flex items-center gap-2 py-3">
           <button
@@ -127,11 +156,11 @@ export default function Home() {
             - Expense
           </button>
         </section>
+
         {/* Expenses */}
         <section className="py-6">
           <h3 className="text-2xl">My expenses/incomes</h3>
           <div className="flex flex-col gap-4 mt-6">
-            {/* Expense items. Three ways to render a list of items using map*/}
             {expenses.map((item, index) => {
               return (
                 <ExpenseItem
@@ -150,21 +179,15 @@ export default function Home() {
                 />
               );
             })}
-            {/* {expenseItemsData.map((expense) => (
-            <ExpenseItem key={expense.title} {...expense} />
-          ))} */}
-            {/* {expenseItemsData.map((expense) => (
-            <ExpenseItem key={expense.title} color={expense.color} title={expense.title} amount={expense.amount} />
-          ))} */}
           </div>
         </section>
-        {/* chats */}
+
+        {/* Expenses by category */}
         <section className="py-6">
           <h3 className="text-2xl">Expenses/Incomes by category</h3>
           <div className="w-1/2 mx-auto">
             <Doughnut
               data={{
-                //category must not show more than 1 time
                 labels: categories.map((item) => item.name),
                 datasets: [
                   {

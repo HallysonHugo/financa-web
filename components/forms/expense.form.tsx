@@ -69,6 +69,26 @@ export default function ExpenseForm({
             placeholder="Infome o valor"
           />
         </div>
+        <div>
+          {/* a checkbox to verify if it will be the whole value or the installment value */}
+          <input type="checkbox" name="installmentValue" />
+          <label htmlFor="installmentValue">Valor da parcela</label>
+        </div>
+        {
+          !isIncome && (
+            <div className="input-group">
+              <label htmlFor="installments">Parcelas</label>
+              <input
+                type="number"
+                min={1}
+                step={1}
+                name="installments"
+                required
+                placeholder="Infome o número de parcelas"
+              />
+            </div>
+          )
+        }
         {/* Add date picker */}
         <div className="input-group">
           <label htmlFor="date">Data</label>

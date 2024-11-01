@@ -6,6 +6,10 @@ async function getAllExpenses() {
   return service.getAllExpenses();
 }
 
+async function getExpensesByMonth(month: number) {
+  return service.getExpensesByMonth(month);
+}
+
 async function addExpense(
   description: string,
   amount: string,
@@ -64,6 +68,7 @@ const expenseController = {
   getCategoryWithTotalExpenseValue,
   deleteExpense,
   getCategories,
+  getExpensesByMonth,
 };
 
 export default expenseController;

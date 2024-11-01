@@ -49,6 +49,11 @@ async function deleteExpense(expenseId: string) {
   return response.json();
 }
 
+async function getExpensesByMonth(month: number) {
+  const response = await fetch(`/api/expense?month=${month}`);
+  return response.json();
+}
+
 async function getCategories() {
   const response = await fetch("/api/category");
   return response.json();
@@ -62,6 +67,7 @@ const repository = {
   getTotalExpenses,
   getCategoryWithTotalExpenseValue,
   getCategories,
+  getExpensesByMonth,
 };
 
 export default repository;

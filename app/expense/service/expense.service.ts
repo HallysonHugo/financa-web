@@ -24,6 +24,10 @@ async function getCategoryWithTotalExpenseValue() {
   });
   return categoryModel;
 }
+async function getExpensesByMonth(month: number) {
+  const expenses = await repository.getExpensesByMonth(month);
+  return expenses;
+}
 
 async function getTotalExpenses() {
   const expenses = await repository.getTotalExpenses();
@@ -63,6 +67,7 @@ const service = {
   getCategoryWithTotalExpenseValue,
   deleteExpense,
   getCategories,
+  getExpensesByMonth,
 };
 
 export default service;
