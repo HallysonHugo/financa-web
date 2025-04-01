@@ -1,5 +1,5 @@
 import expenseController from "@/app/expense/controller/expense.controller";
-import { CategoryModel } from "@/app/expense/models/category.model";
+import { CategoryModel } from "@/app/category/models/category.model";
 import { useEffect, useState } from "react";
 
 interface ExpenseFormProps {

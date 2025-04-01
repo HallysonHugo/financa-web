@@ -3,53 +3,27 @@ import ExpenseSchemaModel, { ExpenseMongo } from "./schema/expense.schema";
 import ExpenseModel from "@/app/expense/models/expense.model";
 import { Types } from "mongoose";
 import { match } from "assert";
+import { apiService } from "./api.service/service";
 
 export async function GET(request: Request) {
   await connectMongo();
 
   // Parse the URL to extract query parameters
   const { searchParams } = new URL(request.url);
+  const expenseId = searchParams.get('id');
+  if (expenseId) {
+    const expense = await apiService.getExpenseById({ expenseId });
+    return new Response(JSON.stringify(expense), { status: 200 });
+  }
 
-  // For example, get the 'month' query parameter
   const month = searchParams.get('month');
-  const matchQuery = month ? {
-    date: {
-      // check if the month is the same as the one in the query parameter
-      $gte: new Date(new Date().getFullYear(), parseInt(month!), 1),
-      $lt: new Date(new Date().getFullYear(), parseInt(month!) + 1, 0),
-    }
-  } : {};
-  // You can now use 'month' in your MongoDB query if needed
-  const result = await ExpenseMongo.aggregate([
-    {
-      $lookup: {
-        from: "categories",
-        localField: "categoryId",
-        foreignField: "_id",
-        as: "category",
-      },
-    },
-    {
-      $unwind: "$category",
-    },
-    {
-      $match: matchQuery,
-    },
-  ]);
-
-  const expenses = result?.map((expense) => {
-    return {
-      ...expense,
-      category: expense.category[0],
-    };
-  });
-
-  const total = expenses?.reduce((acc, expense) => acc + expense.amount, 0);
+  const result = await apiService.getExpensesByMonth({ month: month });
 
   return new Response(
     JSON.stringify({
-      total: total,
-      expenses: expenses,
+      total: result.total,
+      expected: result.expected,
+      expenses: result.expenses,
     }),
     { status: 200 }
   );

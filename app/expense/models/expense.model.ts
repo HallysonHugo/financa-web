@@ -1,5 +1,5 @@
 import { connection, Schema, Types } from "mongoose";
-import { CategoryModel } from "./category.model";
+import { CategoryModel } from "../../category/models/category.model";
 
 export default interface ExpenseModel {
   _id?: Types.ObjectId;

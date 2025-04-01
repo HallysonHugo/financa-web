@@ -58,6 +58,11 @@ async function getCategories() {
   return response.json();
 }
 
+async function getExpenseById(expenseId: string) {
+  const response = await fetch(`/api/expense?id=${expenseId}`);
+  return response.json();
+}
+
 const repository = {
   getAllExpenses,
   createExpense,
@@ -67,6 +72,7 @@ const repository = {
   getCategoryWithTotalExpenseValue,
   getCategories,
   getExpensesByMonth,
+  getExpenseById,
 };
 
 export default repository;

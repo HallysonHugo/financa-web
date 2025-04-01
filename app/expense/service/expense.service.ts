@@ -1,4 +1,4 @@
-import { CategoryModel } from "../models/category.model";
+import { CategoryModel } from "../../category/models/category.model";
 import ExpenseModel from "../models/expense.model";
 import repository from "../repository/expense.repository";
 
@@ -34,9 +34,17 @@ async function getTotalExpenses() {
   return expenses.data as number;
 }
 
+async function getExpenseById(expenseId: string) {
+  return await repository.getExpenseById(expenseId);
+}
+
 async function returnIncomes() {
   const expenses = await getAllExpenses();
   return expenses.expenses.filter((expense) => expense.amount > 0);
+}
+
+async function updateExpense(expense: ExpenseModel) {
+  return await repository.updateExpense(expense);
 }
 
 async function returnExpenses() {
@@ -68,6 +76,8 @@ const service = {
   deleteExpense,
   getCategories,
   getExpensesByMonth,
+  getExpenseById,
+  updateExpense,
 };
 
 export default service;

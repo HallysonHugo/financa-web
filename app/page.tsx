@@ -8,8 +8,9 @@ import Modal from "@/components/modals/modal";
 import ExpenseModel from "./expense/models/expense.model";
 import expenseController from "./expense/controller/expense.controller";
 import ExpenseForm from "@/components/forms/expense.form";
-import { CategoryModel } from "./expense/models/category.model";
+import { CategoryModel } from "./category/models/category.model";
 import { set } from "mongoose";
+import { useRouter } from "next/navigation";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -20,10 +21,12 @@ export default function Home() {
   >(undefined);
   const [expenses, setExpenses] = useState<ExpenseModel[]>([]);
   const [saldo, setSaldo] = useState<number>(0);
+  const [expected, setExpected] = useState<number>(0);
   const [categories, setCategories] = useState<CategoryModel[]>([]);
 
   // Track selected month (0-11 corresponds to Jan-Dec)
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth());
+  const router = useRouter();
 
   const months = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -36,6 +39,7 @@ export default function Home() {
       expenseController.getExpensesByMonth(selectedMonth).then((data) => {
         setExpenses(data.expenses);
         setSaldo(data.total);
+        setExpected(data.expected);
       }),
       expenseController.getCategoryWithTotalExpenseValue().then((data) => {
         setCategories(data);
@@ -44,15 +48,8 @@ export default function Home() {
   }
 
   useEffect(() => {
-
     requiredData();
   }, [selectedMonth]);
-
-  const descriptionRef = useRef<HTMLInputElement>(null);
-  const amountRef = useRef<HTMLInputElement>(null);
-  const dateRef = useRef<HTMLInputElement>(null);
-  const installmentsRef = useRef<HTMLInputElement>(null);
-  const isFullValueRef = useRef<HTMLInputElement>(null);
 
   return (
     <>
@@ -86,41 +83,27 @@ export default function Home() {
         </section>
 
         {/* Balance */}
-        <section className="py-3">
-          <small className="text-gray-400 text-md">Saldo</small>
-          <h2 className="text-4xl font-bold">{currencyBrFormatter(saldo)}</h2>
-        </section>
+        <div className="
+          grid grid-cols-1
+          md:grid-cols-2
+          gap-4
+          py-6
+        ">
+          <section className="py-3">
+            <small className="text-gray-400 text-md">Saldo</small>
+            <h2 className="text-4xl font-bold">{currencyBrFormatter(saldo)}</h2>
+          </section>
+          <section className="py-3">
+            <small className="text-gray-400 text-md">Valor previsto</small>
+            <h2 className="text-4xl font-bold">{currencyBrFormatter(expected)}</h2>
+          </section>
+        </div>
 
         {/* Buttons */}
         <section className="flex items-center gap-2 py-3">
           <button
             onClick={() => {
-              setModalIsOpen(true);
-              setModalChildren(
-                <ExpenseForm
-                  installmentsRef={installmentsRef}
-                  isIncome={true}
-                  descriptionRef={descriptionRef}
-                  amountRef={amountRef}
-                  dateRef={dateRef}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const description = descriptionRef.current?.value;
-                    const amount = amountRef.current?.value;
-                    const date = dateRef.current?.value;
-                    if (!description || !amount || !date) {
-                      return;
-                    }
-                    expenseController
-                      .addExpense(description, amount, new Date(date), true, isFullValueRef.current?.checked ?? false, parseInt(installmentsRef.current?.value ?? "1"))
-                      .then(() => {
-                        requiredData().then(() => {
-                          setModalIsOpen(false);
-                        });
-                      });
-                  }}
-                />
-              );
+              router.push("/expense?isIncome=true");
             }}
             className="btn btn-primary"
           >
@@ -128,32 +111,7 @@ export default function Home() {
           </button>
           <button
             onClick={() => {
-              setModalIsOpen(true);
-              setModalChildren(
-                <ExpenseForm
-                  installmentsRef={installmentsRef}
-                  isIncome={false}
-                  descriptionRef={descriptionRef}
-                  amountRef={amountRef}
-                  dateRef={dateRef}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const description = descriptionRef.current?.value;
-                    const amount = amountRef.current?.value;
-                    const date = dateRef.current?.value;
-                    if (!description || !amount || !date) {
-                      return;
-                    }
-                    expenseController
-                      .addExpense(description, amount, new Date(date), false, isFullValueRef.current?.checked ?? false, parseInt(installmentsRef.current?.value ?? "1"))
-                      .then(() => {
-                        requiredData().then(() => {
-                          setModalIsOpen(false);
-                        });
-                      });
-                  }}
-                />
-              );
+              router.push("/expense?isIncome=false");
             }}
             className="btn btn-primary-outline"
           >
@@ -170,7 +128,8 @@ export default function Home() {
                 <ExpenseItem
                   key={item._id?.toString() ?? index}
                   onClick={() => {
-                    //TODO update expense
+                    const isIncome = item.amount >= 0;
+                    router.push(`/expense?isIncome=${isIncome}&id=${item._id}`);
                   }}
                   onDelete={() => {
                     expenseController.deleteExpense(item).then(() => {
@@ -188,7 +147,17 @@ export default function Home() {
 
         {/* Expenses by category */}
         <section className="py-6">
-          <h3 className="text-2xl">Expenses/Incomes by category</h3>
+          <div className="flex">
+            <h3 className="text-2xl px-3">Expenses/Incomes by category</h3>
+            <button
+              onClick={() => {
+                router.push('/category');
+              }}
+              className="btn btn-primary"
+            >
+              Add Category
+            </button>
+          </div>
           <div className="w-1/2 mx-auto">
             <Doughnut
               data={{
